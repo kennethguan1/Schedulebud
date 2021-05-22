@@ -13,7 +13,7 @@
 #
 class WorkOrder < ApplicationRecord
 
-    validates :name, presence: true
+    validates :time, :duration, :price, :technician_id, :location_id, presence: true
 
     belongs_to :location,
         class_name: :Location
