@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux';
-// import techniciansReducer from "./technicians_reducer";
-// import locationsReducer from "./locations_reducer";
+import technicianReducer from "./technician_reducer";
+import locationReducer from "./location_reducer";
+import workorderReducer from "./work_order_reducer";
 
 const rootReducer = combineReducers({
-//   technicians: techniciansReducer,
-//   locations: locationsReducer,
+    technicians: technicianReducer,
+    locations: locationReducer,
+    workorders: workorderReducer
 });
 
 export default rootReducer;
