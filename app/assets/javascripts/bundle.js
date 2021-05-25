@@ -3609,7 +3609,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       events: [],
-      view: "day"
+      view: "month"
     };
 
     _this.props.fetchLocations().then(function (l) {
@@ -3624,9 +3624,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
       _this.state.workOrders = w;
     });
 
-    _this.plotAppt(_this.state); //required?
-
-
+    _this.handleViewProp = _this.handleViewProp.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -3658,14 +3656,49 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
       var alllocations = this.state.locations;
       var alltechnicians = this.state.technicians;
 
-      for (var i = 0; i < wArray.length; i++) {
+      var _loop = function _loop(i) {
         var currentworkorder = wArray[i];
-        var startTime = new Date(currentworkorder.time);
-        var endTime = new Date(startTime.getTime() + 1000 * 60 * 60 * (currentworkorder.duration / 60));
+        var start = new Date(currentworkorder.time);
+        var end = new Date(start.getTime() + 1000 * 60 * 60 * (currentworkorder.duration / 60));
+        var onelocation = alllocations[currentworkorder.location_id];
+        var onetechnician = alltechnicians[currentworkorder.technician_id];
+
+        function standardTime(time) {
+          new Date(time).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+        }
+
+        function orderBlock() {
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, view === "day" ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, " ", "".concat(onelocation.name), " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "".concat(onelocation.city), " ", ' ', "$".concat(currentworkorder.price), " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "".concat(currentworkorder.duration, " minutes"))) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, standardTime(start), " - ", standardTime(end), onelocation.name));
+        }
+
+        var titleBlock = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+          "data-tip": "React-tooltip",
+          "data-for": "tooltip-".concat(currentworkorder.id)
+        }, orderBlock());
+        events.push({
+          title: titleBlock,
+          resourceId: "".concat(currentworkorder.technician_id),
+          start: new Date(start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes()),
+          end: new Date(end.getFullYear(), end.getMonth(), end.getDate(), end.getHours(), end.getMinutes())
+        });
+      };
+
+      for (var i = 0; i < wArray.length; i++) {
+        _loop(i);
       }
 
       this.setState({
         events: events
+      });
+    }
+  }, {
+    key: "handleViewProp",
+    value: function handleViewProp(event) {
+      this.setState({
+        view: event
       });
     }
   }, {
@@ -3676,12 +3709,13 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_big_calendar__WEBPACK_IMPORTED_MODULE_1__.Calendar, {
         localizer: localizer,
         defaultDate: new Date(),
-        defaultView: "day",
+        defaultView: react_big_calendar__WEBPACK_IMPORTED_MODULE_1__.Views.MONTH,
         events: this.state.events,
         style: {
           height: "100vh"
         },
-        views: ["month", "week", "day"]
+        views: ["month", "week", "day"],
+        resources: getTechnicians(this.props.technicians)
       }));
     }
   }]);
