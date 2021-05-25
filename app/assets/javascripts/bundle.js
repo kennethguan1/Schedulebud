@@ -3608,7 +3608,8 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call(this, props);
     _this.state = {
-      events: []
+      events: [],
+      view: "day"
     };
 
     _this.props.fetchLocations().then(function (l) {
@@ -3623,20 +3624,49 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
       _this.state.workOrders = w;
     });
 
+    _this.plotAppt(_this.state); //required?
+
+
     return _this;
   }
 
   _createClass(FullCalendar, [{
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState) {
+      var _this2 = this;
+
       if (prevProps !== this.props) {
-        console.log(this.props);
         this.setState({
           locations: this.props.locations,
           technicians: this.props.technicians,
           workOrders: this.props.workOrders
+        }, function () {
+          _this2.plotAppt(_this2.state.view);
         });
       }
+    }
+  }, {
+    key: "plotAppt",
+    value: function plotAppt(view) {
+      var wArray = Object.values(this.props.workOrders);
+
+      if (wArray < 1) {
+        return;
+      }
+
+      var events = [];
+      var alllocations = this.state.locations;
+      var alltechnicians = this.state.technicians;
+
+      for (var i = 0; i < wArray.length; i++) {
+        var currentworkorder = wArray[i];
+        var startTime = new Date(currentworkorder.time);
+        var endTime = new Date(startTime.getTime() + 1000 * 60 * 60 * (currentworkorder.duration / 60));
+      }
+
+      this.setState({
+        events: events
+      });
     }
   }, {
     key: "render",

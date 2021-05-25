@@ -24,32 +24,60 @@ let getTechnicians = alltechnicians => {
 class FullCalendar extends React.Component {
        constructor(props) {
         super(props);
-        this.state = {events: []};
+        this.state = {events: [], view: "day"};
         this.props.fetchLocations().then((l) => {
         this.state.locations = l;});
         this.props.fetchTechnicians().then((t) => {
         this.state.technicians = t;});
         this.props.fetchWorkOrders().then((w) => {
         this.state.workOrders = w;});
-
+        this.plotAppt(this.state)                  //required?
 
 
 
     }
 
-  componentDidUpdate(prevProps, prevState){
-    if (prevProps !== this.props) {
-        console.log(this.props)
-      this.setState(
-        {
-          locations: this.props.locations,
-          technicians: this.props.technicians,
-          workOrders: this.props.workOrders,
-        }, 
-      );
+    componentDidUpdate(prevProps, prevState){
+        if (prevProps !== this.props) {
+        this.setState(
+            {
+            locations: this.props.locations,
+            technicians: this.props.technicians,
+            workOrders: this.props.workOrders,
+            }, 
+            () => {this.plotAppt(this.state.view);}
+        );
+        }
     }
-  }
 
+    plotAppt(view) {
+        let wArray = Object.values(this.props.workOrders)
+        if (wArray < 1){return}
+
+
+
+        let events = []
+        let alllocations = this.state.locations;
+        let alltechnicians = this.state.technicians;
+
+        for (let i=0; i<wArray.length; i++){
+            let currentworkorder = wArray[i];
+            let startTime = new Date(currentworkorder.time)
+
+
+            let endTime = new Date(startTime.getTime()+(1000*60)*60*(currentworkorder.duration/60))
+
+
+
+
+
+
+
+        }
+
+        this.setState({events: events})
+
+    }
 
 
     render() {
