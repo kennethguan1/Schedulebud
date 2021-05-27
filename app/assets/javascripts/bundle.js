@@ -3700,7 +3700,6 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
           return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_tooltip__WEBPACK_IMPORTED_MODULE_2__.default, {
             type: 'info',
             id: "tooltip-".concat(currentworkorder.id),
-            event: "click",
             place: "top"
           }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, standardTime(start), " - ", standardTime(end)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "".concat(onelocation.name, " (").concat(onelocation.city, ")")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "".concat(onetechnician.name)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "$".concat(currentworkorder.price)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "".concat(currentworkorder.duration, " minutes")));
         } //name
@@ -3858,8 +3857,8 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         "data-event": "dblclick"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_big_calendar__WEBPACK_IMPORTED_MODULE_1__.Calendar, {
         selectable: true,
-        onSelectSlot: function onSelectSlot(e) {
-          return _this3.alertTime(e);
+        onSelectSlot: function onSelectSlot(event) {
+          return _this3.alertTime(event);
         },
         onView: function onView(event) {
           return _this3.handleViewProp(event);
@@ -3875,9 +3874,8 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         resources: getTechnicians(this.props.technicians)
       })), this.state.view === 'day' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_tooltip__WEBPACK_IMPORTED_MODULE_2__.default, {
         id: "tooltip-availability",
-        "aria-haspopup": "true",
         place: "top",
-        type: "dark",
+        type: "success",
         effect: "float",
         globalEventOff: "click"
       }, this.state.tooltipAvailability) : null);

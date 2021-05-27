@@ -81,7 +81,6 @@ class FullCalendar extends React.Component {
                 <ReactTooltip
                   type={'info'}
                   id={`tooltip-${currentworkorder.id}`}
-                  event={"click"}
                   place={"top"}
                 >
                   <p>
@@ -312,7 +311,7 @@ let getTechnicians = alltechnicians => {
           >
             <Calendar
             selectable
-            onSelectSlot={(e) => this.alertTime(e)}
+            onSelectSlot={(event) => this.alertTime(event)}
             onView={(event) => this.handleViewProp(event)}
             localizer={localizer}
             defaultDate={new Date()}
@@ -326,12 +325,11 @@ let getTechnicians = alltechnicians => {
             
             />
           </div>
-                                  { this.state.view === 'day' ?
+            { this.state.view === 'day' ?
               (<ReactTooltip
               id={`tooltip-availability`}
-              aria-haspopup="true"
               place="top"
-              type="dark"
+              type="success"
               effect="float"
               globalEventOff="click"
               >
