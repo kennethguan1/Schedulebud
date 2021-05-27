@@ -38,6 +38,28 @@ class Api::WorkOrdersController < ApplicationController
         render json: ["Work Order deleted"]
     end
 
+    def upload
+        @upload = JSON.parse(params[:import_data])
+
+        if @upload && @upload.length > 0
+            @upload.each do |import|
+                time_zone = 'Pacific Daylight Time (US & Canada)'
+                
+                new_params = {id: import["id"], technician_id: import["technician_id"], location_id: import["location_id"], time: DateTime.strptime(import["time"]+"#{time_zone}", '%m/%d/%y %H:%M %z'),
+                                    duration: import["duration"], price: import["price"]}
+            
+                @work_order = WorkOrder.new(new_params)
+
+                if !@work_order.save
+                    render json: @work_order.errors.full_messages, status: 422
+                    return;
+                end
+
+            end
+        end
+        
+        render :show
+    end
 
     def work_order_params
         params.require(:work_order).permit(:location_id, :technician_id, :time, :duration, :price)

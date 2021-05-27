@@ -1,24 +1,19 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Instructions
 
-Things you may want to cover:
+* Run "bundle install"
+* Run "npm install"
+* Run "rails db:create" to initialize the database.
+* Run "rails s" to start the rails server.
+* Navigate to localhost:3000/#/
 
-* Ruby version
+ ## Challenges
 
-* System dependencies
+* React library components were used to create the calendar. As this was a third party tool, it was difficult to manipulate the components to function as I wanted it to.
 
-* Configuration
+## Future Implementations
 
-* Database creation
+* Currently, the event slots are sized too big in monthly and weekly view of the calendar. Will need to improve the CSS of the calendar along with other components to improve the calendar's design.
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Would like to add a feature to manually add work orders manually onto the calendar rather than just via csv files.

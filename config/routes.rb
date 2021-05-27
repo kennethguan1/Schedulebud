@@ -4,6 +4,9 @@ Rails.application.routes.draw do
       resources :technicians
       resources :locations
       resources :work_orders
+      post '/parse_location', to: 'locations#upload'
+      post '/parse_technician', to: 'technicians#upload'
+      post '/parse_work_order', to: 'work_orders#upload'
     end
 
     root "static_pages#root"

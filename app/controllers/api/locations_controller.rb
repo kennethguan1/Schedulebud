@@ -38,6 +38,25 @@ class Api::LocationsController < ApplicationController
         render json: ["Location deleted"]
     end
 
+    def upload
+        @upload = JSON.parse(params[:import_data])
+
+        if @upload && @upload.length > 0
+            @upload.each do |import|
+                
+                new_params = {id: import["id"], name: import["name"], city: import["city"]}
+            
+                @location = Location.new(new_params)
+
+                if !@location.save
+                    render json: @location.errors.full_messages, status: 422
+                    return;
+                end
+            end
+        end
+
+        render :show
+    end
 
     def location_params
         params.require(:location).permit(:name, :city)

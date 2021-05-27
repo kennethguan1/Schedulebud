@@ -38,6 +38,25 @@ class Api::TechniciansController < ApplicationController
         render json: ["Technician deleted"]
     end
 
+    def upload
+        @upload = JSON.parse(params[:import_data])
+
+        if @upload && @upload.length > 0
+            @upload.each do |import|
+                
+                new_params = {id: import["id"], name: import["name"]}
+            
+                @technician = Technician.new(new_params)
+
+                if !@technician.save
+                    render json: @technician.errors.full_messages, status: 422
+                return;
+                end
+            end
+        end
+        
+        render :show
+    end
 
     def technician_params
         params.require(:technician).permit(:name)
