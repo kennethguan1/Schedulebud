@@ -3791,7 +3791,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         }
       }
 
-      msg = msg || "".concat(convertHoursAndMinutes(durationMS), " (").concat(convertMinutes(durationMS), " mins)");
+      msg = msg || "".concat(mstoHrMin(durationMS), " (").concat(mstoMin(durationMS), " mins)");
 
       function convertDuration(millisecTimeStamp) {
         var time = new Date(millisecTimeStamp).toLocaleTimeString([], {
@@ -3801,21 +3801,20 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         return time;
       }
 
-      function convertHoursAndMinutes(millisec) {
-        var totalMins = convertMinutes(millisec);
-        var calculatedHours = Math.floor(totalMins / 60);
-        var calculatedMins = totalMins % 60;
-        return "".concat(calculatedHours, " hrs ").concat(calculatedMins, " mins");
+      function mstoHrMin(ms) {
+        var totalHours = Math.floor(mstoMin(ms) / 60);
+        var totalMinutes = mstoMin(ms) % 60;
+        return "".concat(totalHours, " hrs and ").concat(totalMinutes, " mins");
       }
 
-      function convertMinutes(millisec) {
-        var minutes = Math.floor(millisec / 60000);
+      function mstoMin(ms) {
+        var minutes = Math.floor(ms / 60000);
         return minutes;
       }
 
-      var alertMsg = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Available Time"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, duration ? duration : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, msg));
+      var popUp = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Availablability"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, duration ? duration : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, msg));
       this.setState({
-        tooltipAvailability: alertMsg
+        toolTip: popUp
       });
     }
   }, {
@@ -3878,7 +3877,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         type: "success",
         effect: "float",
         globalEventOff: "click"
-      }, this.state.tooltipAvailability) : null);
+      }, this.state.toolTip) : null);
     }
   }]);
 

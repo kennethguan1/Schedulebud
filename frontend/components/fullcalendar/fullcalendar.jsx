@@ -233,7 +233,7 @@ class FullCalendar extends React.Component {
             }
           }
 
-      msg = msg || `${convertHoursAndMinutes(durationMS)} (${convertMinutes(durationMS)} mins)`
+      msg = msg || `${mstoHrMin(durationMS)} (${mstoMin(durationMS)} mins)`
       
 
       function convertDuration(millisecTimeStamp) {
@@ -245,32 +245,27 @@ class FullCalendar extends React.Component {
       }
 
 
-      function convertHoursAndMinutes(millisec){
-        let totalMins = convertMinutes(millisec)
-        let calculatedHours = Math.floor(totalMins/60);
-        let calculatedMins = totalMins % 60
-        return `${calculatedHours} hrs ${calculatedMins} mins`
+      function mstoHrMin(ms){
+        let totalHours = Math.floor(mstoMin(ms)/60);
+        let totalMinutes = mstoMin(ms) % 60;
+        return `${totalHours} hrs and ${totalMinutes} mins`
       }
     
       
-      function convertMinutes(millisec) {
-        let minutes = Math.floor(millisec / 60000);
+      function mstoMin(ms) {
+        let minutes = Math.floor(ms / 60000);
         return minutes;
       }
 
-      const alertMsg = (
+      const popUp = (
         <div>
-          <h3>Available Time</h3>
+          <h3>Availablability</h3>
           <p>{duration ? duration : null}</p>
           <p>{msg}</p>
         </div>
       );
-      this.setState({tooltipAvailability: alertMsg})
+      this.setState({toolTip: popUp})
     }
-
-
-
-
 
     handleViewProp(event){
       this.setState({view: event}
@@ -297,7 +292,6 @@ let getTechnicians = alltechnicians => {
         return techArray;
         }
 }
-
 
 
 
@@ -333,8 +327,7 @@ let getTechnicians = alltechnicians => {
               effect="float"
               globalEventOff="click"
               >
-
-                {this.state.tooltipAvailability}
+                {this.state.toolTip}
               </ReactTooltip>) : null
             }
         </div>
