@@ -6,3 +6,12 @@
     color: white;
 
 }
+
+.rbc-event {
+    height: 25px;
+    padding: 0
+}
+
+.rbc-event-content{
+    font-size: 12px
+}

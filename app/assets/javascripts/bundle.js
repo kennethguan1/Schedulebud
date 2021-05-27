@@ -3699,7 +3699,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         function toolTipComponent() {
           return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_tooltip__WEBPACK_IMPORTED_MODULE_2__.default, {
             type: 'info',
-            id: "tooltip-".concat(currentworkorder.id),
+            id: "".concat(currentworkorder.id),
             place: "top"
           }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, standardTime(start), " - ", standardTime(end)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "".concat(onelocation.name, " (").concat(onelocation.city, ")")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "".concat(onetechnician.name)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "$".concat(currentworkorder.price)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", null, "".concat(currentworkorder.duration, " minutes")));
         } //name
@@ -3712,7 +3712,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
 
         var titleBlock = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
           "data-tip": "React-tooltip",
-          "data-for": "tooltip-".concat(currentworkorder.id)
+          "data-for": "".concat(currentworkorder.id)
         }, eventBlock(), toolTipComponent());
         events.push({
           title: titleBlock,
@@ -3734,35 +3734,31 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
     key: "alertTime",
     value: function alertTime(e) {
       var timeStart = e.start;
-      var resourceId = e.resourceId; // Filter - select events that match clicked slot's resourceId (aka technician) AND date
-
+      var resourceId = e.resourceId;
       var newArray = Object.values(this.state.events).filter(function (event) {
         return event.resourceId === resourceId && (event.start.getDate() === e.start.getDate() || event.end.getDate() === e.start.getDate()) && (event.start.getMonth() === e.start.getMonth() || event.end.getMonth() === e.start.getMonth()) && (event.start.getFullYear() === e.start.getFullYear() || event.end.getFullYear() === e.start.getFullYear());
-      });
-      newArray = newArray.sort(function (a, b) {
+      }).sort(function (a, b) {
         return a.start.getTime() - b.start.getTime();
       });
       var startTime, endTime, dayStartMS, dayEndMS, durationMS, msg, duration;
       dayStartMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 5, 0).getTime();
-      dayEndMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 19, 0).getTime(); // 1) If timeStart is before the first event, set 5am as the beginning of the day
-      // 2) Else if timeStart is after last event, set 7pm as end of day
-      // 3) Else - get the difference of timeStart's immediate neighbor events' endTime and StartTime for availabile duration
+      dayEndMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 19, 0).getTime();
 
       if (newArray.length === 0) {
-        msg = "All Day";
+        msg = "Nothing scheduled";
       } else if (timeStart <= newArray[0].start) {
         if (timeStart.getTime() < dayStartMS) {
           msg = "Outside of working hours";
         } else {
           durationMS = newArray[0].start.getTime() - dayStartMS;
-          duration = "".concat(convertDuration(dayStartMS), " - ").concat(convertDuration(newArray[0].start.getTime()));
+          duration = "".concat(standardTime(dayStartMS), " - ").concat(standardTime(newArray[0].start.getTime()));
         }
       } else if (timeStart >= newArray[newArray.length - 1].end) {
         if (timeStart.getTime() > dayEndMS) {
           msg = "Outside of working hours";
         } else {
           durationMS = dayEndMS - newArray[newArray.length - 1].end.getTime();
-          duration = "".concat(convertDuration(newArray[newArray.length - 1].end.getTime()), " - ").concat(convertDuration(dayEndMS), " ");
+          duration = "".concat(standardTime(newArray[newArray.length - 1].end.getTime()), " - ").concat(standardTime(dayEndMS), " ");
         }
       } else {
         for (var i = 0; i < newArray.length - 1; i++) {
@@ -3779,13 +3775,13 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
             startTime = iEvent.end.getTime();
             endTime = jEvent.start.getTime();
             durationMS = endTime - startTime;
-            duration = "".concat(convertDuration(startTime), " - ").concat(convertDuration(endTime), " ");
+            duration = "".concat(standardTime(startTime), " - ").concat(standardTime(endTime), " ");
             break;
           } else if (timeStart < jEvent.start.getTime() && timeStart >= iEvent.end.getTime()) {
             startTime = iEvent.end.getTime();
             endTime = jEvent.start.getTime();
             durationMS = endTime - startTime;
-            duration = "".concat(convertDuration(startTime), " - ").concat(convertDuration(endTime), " ");
+            duration = "".concat(standardTime(startTime), " - ").concat(standardTime(endTime), " ");
             break;
           }
         }
@@ -3793,12 +3789,11 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
 
       msg = msg || "".concat(mstoHrMin(durationMS), " (").concat(mstoMin(durationMS), " mins)");
 
-      function convertDuration(millisecTimeStamp) {
-        var time = new Date(millisecTimeStamp).toLocaleTimeString([], {
+      function standardTime(msTime) {
+        return new Date(msTime).toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit"
-        }).replace(/^0(?:0:0?)?/, "");
-        return time;
+        });
       }
 
       function mstoHrMin(ms) {
@@ -3820,17 +3815,21 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "handleViewProp",
     value: function handleViewProp(event) {
+      var _this3 = this;
+
       this.setState({
         view: event
+      }, function () {
+        return _this3.plotAppt(_this3.state.view);
       });
     }
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
       var getTechnicians = function getTechnicians(alltechnicians) {
-        if (_this3.state.view === "day") {
+        if (_this4.state.view === "day") {
           var techArray = [];
           var techValues = Object.values(alltechnicians);
           var i = 0;
@@ -3857,10 +3856,10 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_big_calendar__WEBPACK_IMPORTED_MODULE_1__.Calendar, {
         selectable: true,
         onSelectSlot: function onSelectSlot(event) {
-          return _this3.alertTime(event);
+          return _this4.alertTime(event);
         },
         onView: function onView(event) {
-          return _this3.handleViewProp(event);
+          return _this4.handleViewProp(event);
         },
         localizer: localizer,
         defaultDate: new Date(),

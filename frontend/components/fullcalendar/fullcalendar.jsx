@@ -80,7 +80,7 @@ class FullCalendar extends React.Component {
               return (
                 <ReactTooltip
                   type={'info'}
-                  id={`tooltip-${currentworkorder.id}`}
+                  id={`${currentworkorder.id}`}
                   place={"top"}
                 >
                   <p>
@@ -127,7 +127,7 @@ class FullCalendar extends React.Component {
             let titleBlock = (
                 <div
                     data-tip="React-tooltip"
-                    data-for={`tooltip-${currentworkorder.id}`}
+                    data-for={`${currentworkorder.id}`}
                 >
 
                     {eventBlock()}
@@ -156,19 +156,13 @@ class FullCalendar extends React.Component {
       
       let resourceId = e.resourceId;
 
-      // Filter - select events that match clicked slot's resourceId (aka technician) AND date
       let newArray = Object.values(this.state.events).filter(event => {
         return (
           (event.resourceId === resourceId) &&
-          (event.start.getDate() === e.start.getDate() ||event.end.getDate() === e.start.getDate()) &&
-          (event.start.getMonth() === e.start.getMonth() ||event.end.getMonth() === e.start.getMonth()) &&
-          (event.start.getFullYear() === e.start.getFullYear() ||event.end.getFullYear() === e.start.getFullYear()) 
-        )
-      })
-
-      newArray = newArray.sort(function (a, b) {
-        return a.start.getTime() - b.start.getTime();
-      });
+          (event.start.getDate() === e.start.getDate() || event.end.getDate() === e.start.getDate()) &&
+          (event.start.getMonth() === e.start.getMonth() || event.end.getMonth() === e.start.getMonth()) &&
+          (event.start.getFullYear() === e.start.getFullYear() || event.end.getFullYear() === e.start.getFullYear()) 
+        )}).sort(function(a, b){return a.start.getTime() - b.start.getTime();});
 
 
       let startTime, endTime, dayStartMS, dayEndMS, durationMS, msg, duration;
@@ -176,19 +170,14 @@ class FullCalendar extends React.Component {
       dayStartMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 5, 0).getTime();
       dayEndMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 19, 0).getTime();
 
-
-
-      // 1) If timeStart is before the first event, set 5am as the beginning of the day
-      // 2) Else if timeStart is after last event, set 7pm as end of day
-      // 3) Else - get the difference of timeStart's immediate neighbor events' endTime and StartTime for availabile duration
       if (newArray.length === 0) {
-        msg = "All Day"
+        msg = "Nothing scheduled"
       } else if (timeStart <= newArray[0].start) {
         if (timeStart.getTime() < dayStartMS) {
           msg = "Outside of working hours";
         } else {
           durationMS = newArray[0].start.getTime() - dayStartMS;
-          duration = `${convertDuration(dayStartMS)} - ${convertDuration(
+          duration = `${standardTime(dayStartMS)} - ${standardTime(
             newArray[0].start.getTime()
           )}`;
         }
@@ -197,9 +186,9 @@ class FullCalendar extends React.Component {
           msg = "Outside of working hours";
         } else {
           durationMS = dayEndMS - newArray[newArray.length - 1].end.getTime();
-          duration = `${convertDuration(
+          duration = `${standardTime(
             newArray[newArray.length - 1].end.getTime()
-          )} - ${convertDuration(dayEndMS)} `;
+          )} - ${standardTime(dayEndMS)} `;
         }
       } else {
         
@@ -218,7 +207,7 @@ class FullCalendar extends React.Component {
             startTime = iEvent.end.getTime();
             endTime = jEvent.start.getTime();
             durationMS = endTime - startTime;
-            duration = `${convertDuration(startTime)} - ${convertDuration(endTime)} `;
+            duration = `${standardTime(startTime)} - ${standardTime(endTime)} `;
             break;
           }
             
@@ -227,7 +216,7 @@ class FullCalendar extends React.Component {
                 startTime = iEvent.end.getTime();
                 endTime = jEvent.start.getTime();
                 durationMS = endTime - startTime;
-                duration = `${convertDuration(startTime)} - ${convertDuration(endTime)} `;
+                duration = `${standardTime(startTime)} - ${standardTime(endTime)} `;
                 break;
               }
             }
@@ -236,22 +225,19 @@ class FullCalendar extends React.Component {
       msg = msg || `${mstoHrMin(durationMS)} (${mstoMin(durationMS)} mins)`
       
 
-      function convertDuration(millisecTimeStamp) {
-        let time = new Date(millisecTimeStamp).toLocaleTimeString([], {
+      function standardTime(msTime) {
+        return new Date(msTime).toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
-        }).replace(/^0(?:0:0?)?/, "");
-        return time;
+        })
       }
-
 
       function mstoHrMin(ms){
         let totalHours = Math.floor(mstoMin(ms)/60);
         let totalMinutes = mstoMin(ms) % 60;
         return `${totalHours} hrs and ${totalMinutes} mins`
       }
-    
-      
+
       function mstoMin(ms) {
         let minutes = Math.floor(ms / 60000);
         return minutes;
@@ -268,8 +254,7 @@ class FullCalendar extends React.Component {
     }
 
     handleViewProp(event){
-      this.setState({view: event}
-        )
+      this.setState({view: event}, ()=> this.plotAppt(this.state.view))
     }
 
 
@@ -316,7 +301,6 @@ let getTechnicians = alltechnicians => {
             views={[ "month", "week", "day"]}
 
             resources={getTechnicians(this.props.technicians)}
-            
             />
           </div>
             { this.state.view === 'day' ?
