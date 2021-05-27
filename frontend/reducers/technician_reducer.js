@@ -17,7 +17,6 @@ const technicianReducer = (oldState = {}, action) => {
     case RECEIVE_TECHNICIAN:
       return merge(newState, action.technician);
     case REMOVE_TECHNICIAN:
-      // delete newState[action.questionId];                        //controller api call does not return an Id so delete for now and return blank state object
       return {};
     default:
       return oldState;

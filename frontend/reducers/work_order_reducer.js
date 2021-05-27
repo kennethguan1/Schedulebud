@@ -17,7 +17,6 @@ const workorderReducer = (oldState = {}, action) => {
     case RECEIVE_WORK_ORDER:
       return merge(newState, action.location);
     case REMOVE_WORK_ORDER:
-      // delete newState[action.questionId];                        //controller api call does not return an Id so delete for now and return blank state object
       return {};
     default:
       return oldState;
