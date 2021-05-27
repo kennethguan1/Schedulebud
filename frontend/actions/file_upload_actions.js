@@ -6,7 +6,7 @@ const receiveUploadErrors = (errors) => ({
   errors,
 });
 
-export const uploadFile = (type, uploadData) => (dispatch) =>
+export const fileDispatch = (type, uploadData) => (dispatch) =>
   APIUtil.fileUpload(type, uploadData).then(
     (error) => dispatch(receiveUploadErrors(error.responseJSON))
   );

@@ -1,13 +1,13 @@
 import React from "react";
 import FullCalendarContainer from './fullcalendar/fullcalendar_container'
 
-import UploadContainer from './upload/upload_container';
+import FileUploadContainer from './upload/fileupload_container';
 
 const App = () => (
   <div>
-    <h1 className="navbar-website-title">Scheduleler</h1>
+    <h1 className="navbar-website-title">Schedule</h1>
 
-        <UploadContainer />
+        <FileUploadContainer />
         <br />
       <FullCalendarContainer />
       

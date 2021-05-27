@@ -3286,7 +3286,7 @@ function useSafeState(state) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "RECEIVE_UPLOAD_ERRORS": () => (/* binding */ RECEIVE_UPLOAD_ERRORS),
-/* harmony export */   "uploadFile": () => (/* binding */ uploadFile)
+/* harmony export */   "fileDispatch": () => (/* binding */ fileDispatch)
 /* harmony export */ });
 /* harmony import */ var _util_file_upload_api_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/file_upload_api_util */ "./frontend/util/file_upload_api_util.js");
 
@@ -3299,7 +3299,7 @@ var receiveUploadErrors = function receiveUploadErrors(errors) {
   };
 };
 
-var uploadFile = function uploadFile(type, uploadData) {
+var fileDispatch = function fileDispatch(type, uploadData) {
   return function (dispatch) {
     return _util_file_upload_api_util__WEBPACK_IMPORTED_MODULE_0__.fileUpload(type, uploadData).then(function (error) {
       return dispatch(receiveUploadErrors(error.responseJSON));
@@ -3559,7 +3559,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _fullcalendar_fullcalendar_container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./fullcalendar/fullcalendar_container */ "./frontend/components/fullcalendar/fullcalendar_container.jsx");
-/* harmony import */ var _upload_upload_container__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./upload/upload_container */ "./frontend/components/upload/upload_container.js");
+/* harmony import */ var _upload_fileupload_container__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./upload/fileupload_container */ "./frontend/components/upload/fileupload_container.js");
 
 
 
@@ -3567,7 +3567,7 @@ __webpack_require__.r(__webpack_exports__);
 var App = function App() {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h1", {
     className: "navbar-website-title"
-  }, "Scheduleler"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_upload_upload_container__WEBPACK_IMPORTED_MODULE_2__.default, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fullcalendar_fullcalendar_container__WEBPACK_IMPORTED_MODULE_1__.default, null));
+  }, "Schedule"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_upload_fileupload_container__WEBPACK_IMPORTED_MODULE_2__.default, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fullcalendar_fullcalendar_container__WEBPACK_IMPORTED_MODULE_1__.default, null));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
@@ -3970,10 +3970,10 @@ var Root = function Root(_ref) {
 
 /***/ }),
 
-/***/ "./frontend/components/upload/upload.jsx":
-/*!***********************************************!*\
-  !*** ./frontend/components/upload/upload.jsx ***!
-  \***********************************************/
+/***/ "./frontend/components/upload/fileupload.jsx":
+/*!***************************************************!*\
+  !*** ./frontend/components/upload/fileupload.jsx ***!
+  \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -4009,137 +4009,110 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-var Upload = /*#__PURE__*/function (_React$Component) {
-  _inherits(Upload, _React$Component);
+var FileUpload = /*#__PURE__*/function (_React$Component) {
+  _inherits(FileUpload, _React$Component);
 
-  var _super = _createSuper(Upload);
+  var _super = _createSuper(FileUpload);
 
-  function Upload(props) {
+  function FileUpload(props) {
     var _this;
 
-    _classCallCheck(this, Upload);
+    _classCallCheck(this, FileUpload);
 
     _this = _super.call(this, props);
     _this.state = {
-      dataType: "",
-      fileData: "",
-      technicians: [],
       locations: [],
-      workOrders: []
+      technicians: [],
+      type: "",
+      uploadData: ""
     };
-    _this.handleDataType = _this.handleDataType.bind(_assertThisInitialized(_this));
-    _this.handleFile = _this.handleFile.bind(_assertThisInitialized(_this));
+    _this.handleUpload = _this.handleUpload.bind(_assertThisInitialized(_this));
     _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
-    _this.alertError = _this.alertError.bind(_assertThisInitialized(_this));
+    _this.handleDRadioButton = _this.handleDRadioButton.bind(_assertThisInitialized(_this));
+    _this.dataChecker = _this.dataChecker.bind(_assertThisInitialized(_this));
     return _this;
   }
 
-  _createClass(Upload, [{
-    key: "handleDataType",
-    value: function handleDataType(e) {
-      e.preventDefault();
-      this.setState({
-        dataType: e.target.value
-      });
-    }
-  }, {
-    key: "handleFile",
-    value: function handleFile(data, fileInfo) {
-      this.setState({
-        fileData: data
-      });
-    }
-  }, {
+  _createClass(FileUpload, [{
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState) {
       if (prevProps !== this.props) {
         this.setState({
           locations: this.props.locations,
-          technicians: this.props.technicians,
-          workOrders: this.props.workOrders
+          technicians: this.props.technicians
         });
       }
     }
   }, {
-    key: "alertError",
-    value: function alertError(errorType) {
-      switch (errorType) {
-        case "no-file":
-          alert("No file uploaded.");
+    key: "dataChecker",
+    value: function dataChecker(submitData) {
+      var column;
+
+      switch (this.state.type) {
+        case "technician":
+          column = ['id', 'name'];
           break;
 
-        case "no-datatype":
-          alert("No CSV type selected");
+        case "location":
+          column = ['id', 'name', 'city'];
           break;
 
-        case "invalid-data":
-          alert('CSV type does not match');
-          break;
-
-        case "upload-order":
-          alert('Need Location and Technician data before uploading Work Order data');
+        case "work-order":
+          column = ["id", 'technician_id', "location_id", 'time', 'duration', 'price'];
           break;
 
         default:
+          break;
       }
+
+      for (var i = 0; i < submitData.length; i++) {
+        var newColumn = Object.keys(submitData[i]);
+        if (newColumn.length !== column.length) return false;
+
+        for (var j = 0; j < column.length; j++) {
+          if (!newColumn.includes(column[j])) {
+            return false;
+          }
+        }
+      }
+
+      return true;
     }
   }, {
     key: "handleSubmit",
-    value: function handleSubmit(e, fileData, dataType, technicians, locations) {
-      var techCount = Object.values(technicians).length;
-      var locCount = Object.values(locations).length;
-      e.preventDefault();
-      var data = Object.values(fileData);
+    value: function handleSubmit(event, type, uploadData, locations, technicians) {
+      event.preventDefault();
+      var submitData = Object.values(uploadData);
 
-      if (!fileData) {
-        this.alertError("no-file");
+      if (!uploadData) {
+        alert("No file uploaded.");
         return;
-      } else if (dataType === "") {
-        this.alertError("no-datatype");
+      } else if (type === "") {
+        alert("No CSV type selected");
         return;
-      } else if (!validData(data)) {
-        this.alertError("invalid-data");
-      } else if ((techCount === 0 || locCount === 0) && dataType === 'work-order') {
-        this.alertError("upload-order");
+      } else if (!this.dataChecker(submitData)) {
+        alert('CSV type does not match');
+      } else if ((Object.values(technicians).length === 0 || Object.values(locations).length === 0) && type === 'work-order') {
+        alert('Need Location and Technician data before uploading Work Order data');
       } else {
-        this.props.uploadFile(dataType, fileData).then(function () {
+        this.props.fileDispatch(type, uploadData).then(function () {
           return window.location.reload();
         });
       }
-
-      function validData(data) {
-        var colNames;
-
-        switch (dataType) {
-          case "technician":
-            colNames = ['id', 'name'];
-            break;
-
-          case "location":
-            colNames = ['id', 'name', 'city'];
-            break;
-
-          case "work-order":
-            colNames = ["id", 'technician_id', "location_id", 'time', 'duration', 'price'];
-            break;
-
-          default:
-            break;
-        }
-
-        for (var i = 0; i < data.length; i++) {
-          var cols = Object.keys(data[i]);
-          if (cols.length !== colNames.length) return false;
-
-          for (var j = 0; j < colNames.length; j++) {
-            if (!cols.includes(colNames[j])) {
-              return false;
-            }
-          }
-        }
-
-        return true;
-      }
+    }
+  }, {
+    key: "handleUpload",
+    value: function handleUpload(data) {
+      this.setState({
+        uploadData: data
+      });
+    }
+  }, {
+    key: "handleDRadioButton",
+    value: function handleDRadioButton(event) {
+      this.setState({
+        type: event.target.value
+      });
     }
   }, {
     key: "render",
@@ -4148,41 +4121,25 @@ var Upload = /*#__PURE__*/function (_React$Component) {
 
       var papaparseOptions = {
         header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
         transformHeader: function transformHeader(header) {
           return header.toLowerCase().replace(/\W/g, "_");
-        }
+        },
+        dynamicTyping: true,
+        skipEmptyLines: true
       };
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        className: "upload-container"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement((react_csv_reader__WEBPACK_IMPORTED_MODULE_1___default()), {
-        className: "csv-reader-input",
-        label: "CSV Upload",
-        onFileLoaded: this.handleFile,
-        onError: this.handleError,
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement((react_csv_reader__WEBPACK_IMPORTED_MODULE_1___default()), {
+        label: "CSV Upload ",
+        onFileLoaded: this.handleUpload,
         parserOptions: papaparseOptions,
-        inputId: "input-id",
         inputStyle: {
           color: "blue"
         }
-      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", {
-        className: "upload-lower"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        className: "upload-select",
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         name: "fileType",
-        id: "",
-        onChange: function onChange(e) {
-          return _this2.handleDataType(e);
+        onChange: function onChange(event) {
+          return _this2.handleDRadioButton(event);
         }
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
-        type: "radio",
-        id: "choice1",
-        name: "fileType",
-        value: "technician"
-      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
-        htmlFor: "choice1"
-      }, "Technician"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
         type: "radio",
         id: "choice2",
         name: "fileType",
@@ -4191,30 +4148,37 @@ var Upload = /*#__PURE__*/function (_React$Component) {
         htmlFor: "choice2"
       }, "Location"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
         type: "radio",
+        id: "choice1",
+        name: "fileType",
+        value: "technician"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
+        htmlFor: "choice1"
+      }, "Technician"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        type: "radio",
         id: "choice3",
         name: "fileType",
         value: "work-order"
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
         htmlFor: "choice3"
       }, "Work Order")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
-        onClick: function onClick(e) {
-          return _this2.handleSubmit(e, _this2.state.fileData, _this2.state.dataType, _this2.state.technicians, _this2.state.locations);
+        onClick: function onClick(event) {
+          return _this2.handleSubmit(event, _this2.state.type, _this2.state.uploadData, _this2.state.locations, _this2.state.technicians);
         }
       }, "Submit"))));
     }
   }]);
 
-  return Upload;
+  return FileUpload;
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Upload);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FileUpload);
 
 /***/ }),
 
-/***/ "./frontend/components/upload/upload_container.js":
-/*!********************************************************!*\
-  !*** ./frontend/components/upload/upload_container.js ***!
-  \********************************************************/
+/***/ "./frontend/components/upload/fileupload_container.js":
+/*!************************************************************!*\
+  !*** ./frontend/components/upload/fileupload_container.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -4223,7 +4187,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-/* harmony import */ var _upload__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./upload */ "./frontend/components/upload/upload.jsx");
+/* harmony import */ var _fileupload__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./fileupload */ "./frontend/components/upload/fileupload.jsx");
 /* harmony import */ var _actions_file_upload_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../actions/file_upload_actions */ "./frontend/actions/file_upload_actions.js");
 
 
@@ -4232,20 +4196,19 @@ __webpack_require__.r(__webpack_exports__);
 var mapStateToProps = function mapStateToProps(state) {
   return {
     locations: state.locations,
-    technicians: state.technicians,
-    workOrders: state.workorders
+    technicians: state.technicians
   };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
-    uploadFile: function uploadFile(dataType, fileData) {
-      return dispatch((0,_actions_file_upload_actions__WEBPACK_IMPORTED_MODULE_2__.uploadFile)(dataType, fileData));
+    fileDispatch: function fileDispatch(type, uploadData) {
+      return dispatch((0,_actions_file_upload_actions__WEBPACK_IMPORTED_MODULE_2__.fileDispatch)(type, uploadData));
     }
   };
 };
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_0__.connect)(mapStateToProps, mapDispatchToProps)(_upload__WEBPACK_IMPORTED_MODULE_1__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_0__.connect)(mapStateToProps, mapDispatchToProps)(_fileupload__WEBPACK_IMPORTED_MODULE_1__.default));
 
 /***/ }),
 
