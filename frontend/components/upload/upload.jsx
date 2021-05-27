@@ -159,13 +159,13 @@ import CSVReader from "react-csv-reader";
              onChange={(e) => this.handleDataType(e)}>
 
               <input type="radio" id="choice1" name="fileType" value="technician" />
-              <label for="choice1">Technician</label>
+              <label htmlFor="choice1">Technician</label>
 
               <input type="radio" id="choice2" name="fileType" value="location" />
-              <label for="choice2">Location</label>
+              <label htmlFor="choice2">Location</label>
 
               <input type="radio" id="choice3" name="fileType" value="work-order" />
-              <label for="choice3">Work Order</label>
+              <label htmlFor="choice3">Work Order</label>
               
             </div>
 

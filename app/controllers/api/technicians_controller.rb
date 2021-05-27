@@ -39,12 +39,12 @@ class Api::TechniciansController < ApplicationController
     end
 
     def upload
-        @upload = JSON.parse(params[:import_data])
+        @upload = JSON.parse(params[:upload_data])
 
-        if @upload && @upload.length > 0
-            @upload.each do |import|
+        if @upload.length > 0
+            @upload.each do |object|
                 
-                new_params = {id: import["id"], name: import["name"]}
+                new_params = {id: object["id"], name: object["name"]}
             
                 @technician = Technician.new(new_params)
 

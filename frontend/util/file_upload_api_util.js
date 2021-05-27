@@ -1,10 +1,9 @@
-export const importFile = (dataType, fileData) => {
+export const fileUpload = (type, uploadData) => {
 
+    let upload_data = JSON.stringify(uploadData);               //from controllers
     let url;
-    let import_data = JSON.stringify(fileData)
 
-
-    switch (dataType){
+    switch (type){
         case 'location':
             url = `/api/parse_location`;
             break;
@@ -19,9 +18,8 @@ export const importFile = (dataType, fileData) => {
     return $.ajax({
         url: url,
         method: "POST",
-        data: {import_data},
-    })
-    .done(()=> alert('Successfully Uploaded'))
+        data: {upload_data},
+    }).done(()=> alert('Successfully Uploaded'))
     .fail(()=> alert('Upload Failed'));
 
 };

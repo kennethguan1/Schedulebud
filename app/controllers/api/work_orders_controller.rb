@@ -39,14 +39,13 @@ class Api::WorkOrdersController < ApplicationController
     end
 
     def upload
-        @upload = JSON.parse(params[:import_data])
+        @upload = JSON.parse(params[:upload_data])                                  #to api_util
 
-        if @upload && @upload.length > 0
-            @upload.each do |import|
-                time_zone = 'Pacific Daylight Time (US & Canada)'
-                
-                new_params = {id: import["id"], technician_id: import["technician_id"], location_id: import["location_id"], time: DateTime.strptime(import["time"]+"#{time_zone}", '%m/%d/%y %H:%M %z'),
-                                    duration: import["duration"], price: import["price"]}
+        if @upload.length > 0
+            @upload.each do |object|
+
+                new_params = {id: object["id"], technician_id: object["technician_id"], location_id: object["location_id"], 
+                                time: DateTime.strptime(object["time"]+"PDT", '%m/%d/%y %H:%M %Z'), duration: object["duration"], price: object["price"]}
             
                 @work_order = WorkOrder.new(new_params)
 
@@ -54,7 +53,6 @@ class Api::WorkOrdersController < ApplicationController
                     render json: @work_order.errors.full_messages, status: 422
                     return;
                 end
-
             end
         end
         

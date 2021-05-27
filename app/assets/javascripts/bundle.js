@@ -3276,6 +3276,39 @@ function useSafeState(state) {
 
 /***/ }),
 
+/***/ "./frontend/actions/file_upload_actions.js":
+/*!*************************************************!*\
+  !*** ./frontend/actions/file_upload_actions.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "RECEIVE_UPLOAD_ERRORS": () => (/* binding */ RECEIVE_UPLOAD_ERRORS),
+/* harmony export */   "uploadFile": () => (/* binding */ uploadFile)
+/* harmony export */ });
+/* harmony import */ var _util_file_upload_api_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/file_upload_api_util */ "./frontend/util/file_upload_api_util.js");
+
+var RECEIVE_UPLOAD_ERRORS = "RECEIVE_UPLOAD_ERRORS";
+
+var receiveUploadErrors = function receiveUploadErrors(errors) {
+  return {
+    type: RECEIVE_UPLOAD_ERRORS,
+    errors: errors
+  };
+};
+
+var uploadFile = function uploadFile(type, uploadData) {
+  return function (dispatch) {
+    return _util_file_upload_api_util__WEBPACK_IMPORTED_MODULE_0__.fileUpload(type, uploadData).then(function (error) {
+      return dispatch(receiveUploadErrors(error.responseJSON));
+    });
+  };
+};
+
+/***/ }),
+
 /***/ "./frontend/actions/location_actions.js":
 /*!**********************************************!*\
   !*** ./frontend/actions/location_actions.js ***!
@@ -3431,50 +3464,6 @@ var fetchTechnician = function fetchTechnician(technicianId) {
     });
   };
 };
-
-/***/ }),
-
-/***/ "./frontend/actions/upload_actions.js":
-/*!********************************************!*\
-  !*** ./frontend/actions/upload_actions.js ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "RECEIVE_ERRORS": () => (/* binding */ RECEIVE_ERRORS),
-/* harmony export */   "uploadFile": () => (/* binding */ uploadFile)
-/* harmony export */ });
-/* harmony import */ var _util_upload_api_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/upload_api_util */ "./frontend/util/upload_api_util.js");
-
-var RECEIVE_ERRORS = "RECEIVE_ERRORS";
-
-var receiveErrors = function receiveErrors(errors) {
-  return {
-    type: RECEIVE_ERRORS,
-    errors: errors
-  };
-};
-
-var removeErrors = function removeErrors() {
-  return {
-    type: CLEAR_ERRORS
-  };
-};
-
-var uploadFile = function uploadFile(dataType, fileData) {
-  return function (dispatch) {
-    return (0,_util_upload_api_util__WEBPACK_IMPORTED_MODULE_0__.importFile)(dataType, fileData).then( // (users) => dispatch(receiveUsers(users)),
-    function (error) {
-      return dispatch(receiveErrors(error.responseJSON));
-    });
-  };
-}; // export const fetchUser = (id) => (dispatch) =>
-//   getUser(id).then(
-//     (user) => dispatch(receiveUser(user)),
-//     (error) => dispatch(receiveErrors(error.responseJSON))
-//   );
 
 /***/ }),
 
@@ -4192,21 +4181,21 @@ var Upload = /*#__PURE__*/function (_React$Component) {
         name: "fileType",
         value: "technician"
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
-        "for": "choice1"
+        htmlFor: "choice1"
       }, "Technician"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
         type: "radio",
         id: "choice2",
         name: "fileType",
         value: "location"
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
-        "for": "choice2"
+        htmlFor: "choice2"
       }, "Location"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
         type: "radio",
         id: "choice3",
         name: "fileType",
         value: "work-order"
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
-        "for": "choice3"
+        htmlFor: "choice3"
       }, "Work Order")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
         onClick: function onClick(e) {
           return _this2.handleSubmit(e, _this2.state.fileData, _this2.state.dataType, _this2.state.technicians, _this2.state.locations);
@@ -4235,7 +4224,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 /* harmony import */ var _upload__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./upload */ "./frontend/components/upload/upload.jsx");
-/* harmony import */ var _actions_upload_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../actions/upload_actions */ "./frontend/actions/upload_actions.js");
+/* harmony import */ var _actions_file_upload_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../actions/file_upload_actions */ "./frontend/actions/file_upload_actions.js");
 
 
 
@@ -4251,7 +4240,7 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     uploadFile: function uploadFile(dataType, fileData) {
-      return dispatch((0,_actions_upload_actions__WEBPACK_IMPORTED_MODULE_2__.uploadFile)(dataType, fileData));
+      return dispatch((0,_actions_file_upload_actions__WEBPACK_IMPORTED_MODULE_2__.uploadFile)(dataType, fileData));
     }
   };
 };
@@ -4291,7 +4280,6 @@ var locationReducer = function locationReducer() {
       return (0,lodash__WEBPACK_IMPORTED_MODULE_1__.merge)(newState, action.location);
 
     case _actions_location_actions__WEBPACK_IMPORTED_MODULE_0__.REMOVE_LOCATION:
-      // delete newState[action.questionId];                        //controller api call does not return an Id so delete for now and return blank state object
       return {};
 
     default:
@@ -4362,7 +4350,6 @@ var technicianReducer = function technicianReducer() {
       return (0,lodash__WEBPACK_IMPORTED_MODULE_1__.merge)(newState, action.technician);
 
     case _actions_technician_actions__WEBPACK_IMPORTED_MODULE_0__.REMOVE_TECHNICIAN:
-      // delete newState[action.questionId];                        //controller api call does not return an Id so delete for now and return blank state object
       return {};
 
     default:
@@ -4405,7 +4392,6 @@ var workorderReducer = function workorderReducer() {
       return (0,lodash__WEBPACK_IMPORTED_MODULE_1__.merge)(newState, action.location);
 
     case _actions_work_order_actions__WEBPACK_IMPORTED_MODULE_0__.REMOVE_WORK_ORDER:
-      // delete newState[action.questionId];                        //controller api call does not return an Id so delete for now and return blank state object
       return {};
 
     default:
@@ -4444,6 +4430,51 @@ var configureStore = function configureStore() {
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (configureStore);
+
+/***/ }),
+
+/***/ "./frontend/util/file_upload_api_util.js":
+/*!***********************************************!*\
+  !*** ./frontend/util/file_upload_api_util.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "fileUpload": () => (/* binding */ fileUpload)
+/* harmony export */ });
+var fileUpload = function fileUpload(type, uploadData) {
+  var upload_data = JSON.stringify(uploadData); //from controllers
+
+  var url;
+
+  switch (type) {
+    case 'location':
+      url = "/api/parse_location";
+      break;
+
+    case 'technician':
+      url = "/api/parse_technician";
+      break;
+
+    case 'work-order':
+      url = "/api/parse_work_order";
+      break;
+  }
+
+  return $.ajax({
+    url: url,
+    method: "POST",
+    data: {
+      upload_data: upload_data
+    }
+  }).done(function () {
+    return alert('Successfully Uploaded');
+  }).fail(function () {
+    return alert('Upload Failed');
+  });
+};
 
 /***/ }),
 
@@ -4550,50 +4581,6 @@ var deleteTechnician = function deleteTechnician(technicianId) {
   return $.ajax({
     url: "/api/technicians/".concat(technicianId),
     method: "DELETE"
-  });
-};
-
-/***/ }),
-
-/***/ "./frontend/util/upload_api_util.js":
-/*!******************************************!*\
-  !*** ./frontend/util/upload_api_util.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "importFile": () => (/* binding */ importFile)
-/* harmony export */ });
-var importFile = function importFile(dataType, fileData) {
-  var url;
-  var import_data = JSON.stringify(fileData);
-
-  switch (dataType) {
-    case 'location':
-      url = "/api/parse_location";
-      break;
-
-    case 'technician':
-      url = "/api/parse_technician";
-      break;
-
-    case 'work-order':
-      url = "/api/parse_work_order";
-      break;
-  }
-
-  return $.ajax({
-    url: url,
-    method: "POST",
-    data: {
-      import_data: import_data
-    }
-  }).done(function () {
-    return alert('Successfully Uploaded');
-  }).fail(function () {
-    return alert('Upload Failed');
   });
 };
 
