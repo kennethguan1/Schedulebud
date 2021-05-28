@@ -129,9 +129,7 @@ class FullCalendar extends React.Component {
                     data-tip="React-tooltip"
                     data-for={`${currentworkorder.id}`}
                 >
-
                     {eventBlock()}
-
                     {toolTipComponent()}
 
                 </div>

@@ -5,7 +5,7 @@ import FileUploadContainer from './upload/fileupload_container';
 
 const App = () => (
   <div>
-    <h1 className="navbar-website-title">Schedule</h1>
+    <h1 className="navbar-website-title">Schedulebud</h1>
 
         <FileUploadContainer />
         <br />
