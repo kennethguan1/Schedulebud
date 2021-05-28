@@ -3634,9 +3634,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       events: [],
-      view: "month",
-      locations: [],
-      technicians: []
+      view: "month"
     };
 
     _this.props.fetchLocations().then(function (l) {

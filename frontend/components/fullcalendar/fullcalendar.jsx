@@ -14,7 +14,7 @@ const localizer = momentLocalizer(moment);
 class FullCalendar extends React.Component {
        constructor(props) {
         super(props);
-        this.state = {events: [], view: "month", locations: [], technicians: []
+        this.state = {events: [], view: "month"
           };
 
         this.props.fetchLocations().then((l) => {
