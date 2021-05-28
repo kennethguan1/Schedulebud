@@ -3735,59 +3735,51 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
     value: function alertTime(e) {
       var timeStart = e.start;
       var resourceId = e.resourceId;
+      var timeAvailable, msg, duration, begin, ending;
+      var msStart = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 0, 0).getTime();
+      var msEnd = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 23, 59, 59).getTime();
       var newArray = Object.values(this.state.events).filter(function (event) {
         return event.resourceId === resourceId && (event.start.getDate() === e.start.getDate() || event.end.getDate() === e.start.getDate()) && (event.start.getMonth() === e.start.getMonth() || event.end.getMonth() === e.start.getMonth()) && (event.start.getFullYear() === e.start.getFullYear() || event.end.getFullYear() === e.start.getFullYear());
       }).sort(function (a, b) {
         return a.start.getTime() - b.start.getTime();
       });
-      var startTime, endTime, dayStartMS, dayEndMS, durationMS, msg, duration;
-      dayStartMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 5, 0).getTime();
-      dayEndMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 19, 0).getTime();
 
       if (newArray.length === 0) {
         msg = "Nothing scheduled";
       } else if (timeStart <= newArray[0].start) {
-        if (timeStart.getTime() < dayStartMS) {
-          msg = "Outside of working hours";
-        } else {
-          durationMS = newArray[0].start.getTime() - dayStartMS;
-          duration = "".concat(standardTime(dayStartMS), " - ").concat(standardTime(newArray[0].start.getTime()));
-        }
+        timeAvailable = newArray[0].start.getTime() - msStart;
+        duration = "".concat(standardTime(msStart), " - ").concat(standardTime(newArray[0].start.getTime()));
       } else if (timeStart >= newArray[newArray.length - 1].end) {
-        if (timeStart.getTime() > dayEndMS) {
-          msg = "Outside of working hours";
-        } else {
-          durationMS = dayEndMS - newArray[newArray.length - 1].end.getTime();
-          duration = "".concat(standardTime(newArray[newArray.length - 1].end.getTime()), " - ").concat(standardTime(dayEndMS), " ");
-        }
+        timeAvailable = msEnd - newArray[newArray.length - 1].end.getTime();
+        duration = "".concat(standardTime(newArray[newArray.length - 1].end.getTime()), " - ").concat(standardTime(msEnd), " ");
       } else {
         for (var i = 0; i < newArray.length - 1; i++) {
-          var iEvent = newArray[i];
-          var jEvent = newArray[i + 1];
+          var current = newArray[i];
+          var next = newArray[i + 1];
 
-          if (timeStart >= iEvent.start.getTime() && timeStart < iEvent.end.getTime()) {
+          if (timeStart >= current.start.getTime() && timeStart < current.end.getTime()) {
             return;
           }
 
-          if (iEvent.end.getTime() > jEvent.start.getTime() || jEvent.end.getTime() < timeStart) {
+          if (current.end.getTime() > next.start.getTime() || next.end.getTime() < timeStart) {
             continue;
-          } else if (timeStart <= iEvent.end.getTime() && timeStart < jEvent.start.getTime()) {
-            startTime = iEvent.end.getTime();
-            endTime = jEvent.start.getTime();
-            durationMS = endTime - startTime;
-            duration = "".concat(standardTime(startTime), " - ").concat(standardTime(endTime), " ");
+          } else if (timeStart <= current.end.getTime() && timeStart < next.start.getTime()) {
+            begin = current.end.getTime();
+            ending = next.start.getTime();
+            timeAvailable = ending - begin;
+            duration = "".concat(standardTime(begin), " - ").concat(standardTime(ending), " ");
             break;
-          } else if (timeStart < jEvent.start.getTime() && timeStart >= iEvent.end.getTime()) {
-            startTime = iEvent.end.getTime();
-            endTime = jEvent.start.getTime();
-            durationMS = endTime - startTime;
-            duration = "".concat(standardTime(startTime), " - ").concat(standardTime(endTime), " ");
+          } else if (timeStart < next.start.getTime() && timeStart >= current.end.getTime()) {
+            begin = current.end.getTime();
+            ending = next.start.getTime();
+            timeAvailable = ending - begin;
+            duration = "".concat(standardTime(begin), " - ").concat(standardTime(ending), " ");
             break;
           }
         }
       }
 
-      msg = msg || "".concat(mstoHrMin(durationMS), " (").concat(mstoMin(durationMS), " mins)");
+      msg = msg || "".concat(mstoHrMin(timeAvailable), " (").concat(mstoMin(timeAvailable), " mins)");
 
       function standardTime(msTime) {
         return new Date(msTime).toLocaleTimeString("en-US", {
@@ -3848,11 +3840,17 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "App"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        className: "tooltip-availability",
+      }, this.state.view === 'day' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_tooltip__WEBPACK_IMPORTED_MODULE_2__.default, {
+        id: "tooltip-availability",
+        globalEventOff: "click",
+        place: "top",
+        effect: "float",
+        type: "success"
+      }, " ", this.state.toolTip) : null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         "data-tip": "",
-        "data-for": "tooltip-availability",
-        "data-event": "dblclick"
+        className: "tooltip-availability",
+        "data-event": "dblclick",
+        "data-for": "tooltip-availability"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_big_calendar__WEBPACK_IMPORTED_MODULE_1__.Calendar, {
         selectable: true,
         onSelectSlot: function onSelectSlot(event) {
@@ -3870,13 +3868,7 @@ var FullCalendar = /*#__PURE__*/function (_React$Component) {
         },
         views: ["month", "week", "day"],
         resources: getTechnicians(this.props.technicians)
-      })), this.state.view === 'day' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_tooltip__WEBPACK_IMPORTED_MODULE_2__.default, {
-        id: "tooltip-availability",
-        place: "top",
-        type: "success",
-        effect: "float",
-        globalEventOff: "click"
-      }, this.state.toolTip) : null);
+      })));
     }
   }]);
 

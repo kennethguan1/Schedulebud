@@ -156,6 +156,15 @@ class FullCalendar extends React.Component {
       
       let resourceId = e.resourceId;
 
+      let timeAvailable, msg, duration, begin, ending;
+
+      let msStart = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 0, 0).getTime();
+      let msEnd = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 23, 59, 59).getTime();
+
+
+
+
+
       let newArray = Object.values(this.state.events).filter(event => {
         return (
           (event.resourceId === resourceId) &&
@@ -165,64 +174,46 @@ class FullCalendar extends React.Component {
         )}).sort(function(a, b){return a.start.getTime() - b.start.getTime();});
 
 
-      let startTime, endTime, dayStartMS, dayEndMS, durationMS, msg, duration;
-
-      dayStartMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 5, 0).getTime();
-      dayEndMS = new Date(timeStart.getFullYear(), timeStart.getMonth(), timeStart.getDate(), 19, 0).getTime();
 
       if (newArray.length === 0) {
         msg = "Nothing scheduled"
       } else if (timeStart <= newArray[0].start) {
-        if (timeStart.getTime() < dayStartMS) {
-          msg = "Outside of working hours";
-        } else {
-          durationMS = newArray[0].start.getTime() - dayStartMS;
-          duration = `${standardTime(dayStartMS)} - ${standardTime(
-            newArray[0].start.getTime()
-          )}`;
-        }
+          timeAvailable = newArray[0].start.getTime() - msStart;
+          duration = `${standardTime(msStart)} - ${standardTime(newArray[0].start.getTime())}`;
       } else if (timeStart >= newArray[newArray.length - 1].end) {
-        if (timeStart.getTime() > dayEndMS) {
-          msg = "Outside of working hours";
-        } else {
-          durationMS = dayEndMS - newArray[newArray.length - 1].end.getTime();
-          duration = `${standardTime(
-            newArray[newArray.length - 1].end.getTime()
-          )} - ${standardTime(dayEndMS)} `;
-        }
+          timeAvailable = msEnd - newArray[newArray.length - 1].end.getTime();
+          duration = `${standardTime(newArray[newArray.length - 1].end.getTime())} - ${standardTime(msEnd)} `;
       } else {
-        
-        for (let i = 0; i < newArray.length - 1; i++) {
-            let iEvent = newArray[i];
-            let jEvent = newArray[i+1];
 
-          if ((timeStart >= iEvent.start.getTime() && timeStart < iEvent.end.getTime())){
+        for (let i = 0; i < newArray.length - 1; i++) {
+            let current = newArray[i];
+            let next = newArray[i+1];
+
+          if ((timeStart >= current.start.getTime() && timeStart < current.end.getTime())){
             return;
           }
           
 
-          if (iEvent.end.getTime() > jEvent.start.getTime() || jEvent.end.getTime() < timeStart) {
+          if (current.end.getTime() > next.start.getTime() || next.end.getTime() < timeStart) {
               continue
-          } else if (timeStart <= iEvent.end.getTime() && timeStart < jEvent.start.getTime()) {
-            startTime = iEvent.end.getTime();
-            endTime = jEvent.start.getTime();
-            durationMS = endTime - startTime;
-            duration = `${standardTime(startTime)} - ${standardTime(endTime)} `;
+          } else if (timeStart <= current.end.getTime() && timeStart < next.start.getTime()) {
+            begin = current.end.getTime();
+            ending = next.start.getTime();
+            timeAvailable = ending - begin;
+            duration = `${standardTime(begin)} - ${standardTime(ending)} `;
             break;
-          }
-            
-            
-            else if (timeStart < jEvent.start.getTime() && timeStart >= iEvent.end.getTime()){
-                startTime = iEvent.end.getTime();
-                endTime = jEvent.start.getTime();
-                durationMS = endTime - startTime;
-                duration = `${standardTime(startTime)} - ${standardTime(endTime)} `;
+          } else if (timeStart < next.start.getTime() && timeStart >= current.end.getTime()){
+                begin = current.end.getTime();
+                ending = next.start.getTime();
+                timeAvailable = ending - begin;
+                duration = `${standardTime(begin)} - ${standardTime(ending)} `;
                 break;
               }
             }
           }
 
-      msg = msg || `${mstoHrMin(durationMS)} (${mstoMin(durationMS)} mins)`
+
+          msg = msg || `${mstoHrMin(timeAvailable)} (${mstoMin(timeAvailable)} mins)`
       
 
       function standardTime(msTime) {
@@ -260,33 +251,43 @@ class FullCalendar extends React.Component {
 
     render() {
 
-let getTechnicians = alltechnicians => {
-        if (this.state.view==="day"){
-        let techArray = [];
-        let techValues = Object.values(alltechnicians);
-        let i = 0;
+  let getTechnicians = alltechnicians => {
+          if (this.state.view==="day"){
+          let techArray = [];
+          let techValues = Object.values(alltechnicians);
+          let i = 0;
 
-        while (i < techValues.length) {
-            techArray.push({
-            id: `${techValues[i].id}`,
-            title: `${techValues[i].name}`
-            });
-            i++
-        }
+          while (i < techValues.length) {
+              techArray.push({
+              id: `${techValues[i].id}`,
+              title: `${techValues[i].name}`
+              });
+              i++
+          }
 
-        return techArray;
-        }
-}
+          return techArray;
+          }
+  }
 
 
 
         return (
         <div className="App">
+          { this.state.view === 'day' ?
+            (<ReactTooltip
+            id={`tooltip-availability`}
+            globalEventOff="click"
+            place="top"
+            effect="float"
+            type="success"
+            > {this.state.toolTip}
+            </ReactTooltip>) : null
+          }
           <div
-            className="tooltip-availability"
               data-tip=""
-              data-for={`tooltip-availability`}
+              className="tooltip-availability"
               data-event={"dblclick"}
+              data-for={`tooltip-availability`}
           >
             <Calendar
             selectable
@@ -303,19 +304,8 @@ let getTechnicians = alltechnicians => {
             resources={getTechnicians(this.props.technicians)}
             />
           </div>
-            { this.state.view === 'day' ?
-              (<ReactTooltip
-              id={`tooltip-availability`}
-              place="top"
-              type="success"
-              effect="float"
-              globalEventOff="click"
-              >
-                {this.state.toolTip}
-              </ReactTooltip>) : null
-            }
         </div>
-        );
+        )
     }
 
 }
