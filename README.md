@@ -10,10 +10,10 @@
 
  ## Challenges
 
-* React library components were used to create the calendar. As this was a third party tool, it was difficult to manipulate the components to function as I wanted it to.
+* React library components were used to create the calendar. As these were a third party tool, it was difficult to manipulate the components and understand the props passed to them for the components to function as I wanted it to.
 
 ## Future Implementations
 
-* Currently, the event slots are sized too big in monthly and weekly view of the calendar. Will need to improve the CSS of the calendar along with other components to improve the calendar's design.
+* Currently, the calendar styling is styled minimally to focus on functionality. Will need to improve the CSS / styling of the calendar along with its inner components to improve the calendar's design.
 
-* Would like to add a feature to manually add work orders manually onto the calendar rather than just via csv files.
+* Would like to add a feature to add work orders, locations, and technicians manually onto the calendar rather than just via csv files.
